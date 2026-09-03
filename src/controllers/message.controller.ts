@@ -46,6 +46,8 @@ export const sendMessages = asyncHandler(async (req, res) => {
         user,
     );
 
+    res.setHeader("X-Chat-Id", chatId);
+
     res.setHeader(
         "Content-Type",
         "text/plain; charset=utf-8",

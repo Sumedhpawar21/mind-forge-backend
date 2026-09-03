@@ -1,6 +1,7 @@
 import { OpenAIEmbeddings } from "@langchain/openai";
 import { QdrantVectorStore } from "@langchain/qdrant";
 import { envConfig } from "../configs/env.config.js";
+import { chatModel } from "../configs/ai.config.js";
 import { constants } from "../constants/constants.js";
 import { generateText, Output } from "ai";
 import z from "zod";
@@ -36,7 +37,7 @@ export async function generateMemories(
     userQuery: string,
 ) {
     const result = await generateText({
-        model: "openai/gpt-4o-mini",
+        model: chatModel,
         instructions: `
 You are a memory extraction system.
 

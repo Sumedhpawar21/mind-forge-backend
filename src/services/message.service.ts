@@ -1,6 +1,7 @@
 import { chatAgent } from "../agents/chat.agent.js"
 import { db } from "../configs/db.config.js"
 import type { AuthUser } from "../middlewares/auth.middleware.js"
+import { generateAndSetChatTitle } from "./title.service.js"
 
 export async function getMessagesService(page: number, limit: number, where: any) {
 
@@ -26,6 +27,17 @@ export async function getMessagesService(page: number, limit: number, where: any
 }
 
 export async function sendMessageService(chatId: string, userMessage: string, user: AuthUser) {
+    const chat = await db.chats.findUnique({
+        where: { id: chatId },
+        select: { title: true },
+    })
+
+    if (chat && !chat.title) {
+        generateAndSetChatTitle(chatId, userMessage).catch((error) => {
+            console.error("Failed to generate chat title:", error)
+        })
+    }
+
     const messages = await db.messages.findMany({
         where: {
             chatId

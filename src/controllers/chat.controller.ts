@@ -45,6 +45,6 @@ export const deleteChat = asyncHandler(async (req, res) => {
     .json({
       success: true,
       message: "chat Deleted Successfully",
-      data: deleteChat,
+      data: deletedChat,
     });
 });

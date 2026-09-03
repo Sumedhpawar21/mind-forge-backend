@@ -21,7 +21,7 @@ export const loginService = async (id_token: string) => {
             data: {
                 email: payload?.email || "",
                 name: payload?.name || "",
-                image: payload?.picture || "",
+                avatar: payload?.picture || "",
             },
         });
     }

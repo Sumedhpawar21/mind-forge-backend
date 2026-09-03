@@ -12,7 +12,11 @@ export const login = asyncHandler(async (req, res) => {
         secure: envConfig.NODE_ENV === "production",
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         sameSite: "lax",
-    }).json({ success: true, message: `Welcome ${user.name}` })
+    }).json({
+        success: true,
+        message: `Welcome ${user.name}`,
+        data: { token, user },
+    })
 });
 export const logout = asyncHandler(async (req, res) => {
     return res.status(200).clearCookie(constants.authCookie, {

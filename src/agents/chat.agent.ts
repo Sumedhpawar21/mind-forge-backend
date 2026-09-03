@@ -1,5 +1,6 @@
 import { streamText, type ModelMessage } from "ai";
 import type { Messages, User } from "../generated/prisma/client.js";
+import { chatModel } from "../configs/ai.config.js";
 import { generateMemories, getMemories, saveMemories } from "../services/rag.service.js";
 import { getUserMemoryTool } from "../tools/agent.tool.js";
 import type { AuthUser } from "../middlewares/auth.middleware.js";
@@ -33,7 +34,7 @@ export async function chatAgent(
         },
     });
     return streamText({
-        model: "openai/gpt-4o-mini",
+        model: chatModel,
         instructions: context.SYSTEM_PROMPT,
         allowSystemInMessages: true,
         messages: [
