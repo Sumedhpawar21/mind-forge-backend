@@ -9,7 +9,8 @@ const app: Application = express();
 
 app.use(morgan("dev"));
 app.use(cors({
-    credentials: true
+    origin: envConfig.CORS_ORIGINS,
+    credentials: true,
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
