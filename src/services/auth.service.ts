@@ -31,5 +31,11 @@ export const loginService = async (id_token: string) => {
 
 function generateToken(user: User) {
     return jwt.sign({ userId: user.id, name: user.name, email: user.email }, envConfig.JWT_SECRET, { expiresIn: "7d" });
-
+}
+export async function getProfileService(userId: string) {
+    return await db.user.findUnique({
+        where: {
+            id: userId
+        }
+    });
 }

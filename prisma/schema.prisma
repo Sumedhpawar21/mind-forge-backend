@@ -12,6 +12,37 @@ model User {
   email  String  @unique
   avatar String?
   name   String
+  chats  Chats[]
 
   @@map("users")
+}
+
+model Chats {
+  id        String   @id @default(uuid())
+  title     String?
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages Messages[]
+
+  @@map("chats")
+}
+
+enum MessageRoles {
+  User
+  AGENT
+}
+
+model Messages {
+  id        String       @id @default(uuid())
+  chatId    String
+  content   String
+  role      MessageRoles
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @default(now()) @updatedAt
+  chat      Chats        @relation(fields: [chatId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
 }
