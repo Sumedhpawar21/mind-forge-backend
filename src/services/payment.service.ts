@@ -12,7 +12,7 @@ export async function verifyPaymentService(razorpay_order_id: string, razorpay_p
     if (razorpay_signature === expectedSignature) {
         const paymentDetails = await razorpayClient.payments.fetch(razorpay_payment_id)
         if (paymentDetails.status === "captured" || paymentDetails.status === "authorized") {
-            const payment = await db.payments.update({ data: { status: "SUCCESS" }, where: { razorpayOrderId: razorpay_order_id, paymentId: razorpay_payment_id } })
+            const payment = await db.payments.update({ data: { status: "SUCCESS", paymentId: razorpay_payment_id }, where: { razorpayOrderId: razorpay_order_id } })
             await db.subscriptions.create({ data: { usage: 0, planId: payment.planId, userId: payment.userId } })
             success = true
             message = "Subscription bought successfully"
