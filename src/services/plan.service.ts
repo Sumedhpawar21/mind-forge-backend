@@ -14,6 +14,13 @@ export const seedPlansService = async () => {
 
     const plans = [
         {
+            name: "Free",
+            description:
+                "Get started at no cost with 3 AI messages. Ideal for a quick first look at the assistant before upgrading.",
+            price: 0,
+            max_messages: 3,
+        },
+        {
             name: "Starter",
             description:
                 "Perfect for trying things out. Get 5 AI messages to explore chats and see how the assistant works — ideal for light, one-off questions.",
