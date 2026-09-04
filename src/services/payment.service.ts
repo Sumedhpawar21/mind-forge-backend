@@ -13,7 +13,20 @@ export async function verifyPaymentService(razorpay_order_id: string, razorpay_p
         const paymentDetails = await razorpayClient.payments.fetch(razorpay_payment_id)
         if (paymentDetails.status === "captured" || paymentDetails.status === "authorized") {
             const payment = await db.payments.update({ data: { status: "SUCCESS", paymentId: razorpay_payment_id }, where: { razorpayOrderId: razorpay_order_id } })
-            await db.subscriptions.create({ data: { usage: 0, planId: payment.planId, userId: payment.userId } })
+            await db.subscriptions.upsert({
+                where: {
+                    userId: payment.userId,
+                },
+                create: {
+                    usage: 0,
+                    planId: payment.planId,
+                    userId: payment.userId,
+                },
+                update: {
+                    usage: 0,
+                    planId: payment.planId,
+                },
+            });
             success = true
             message = "Subscription bought successfully"
         }
