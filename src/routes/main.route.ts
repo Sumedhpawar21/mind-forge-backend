@@ -6,10 +6,12 @@ import messageRouter from "./message.route.js";
 import subscriptionRouter from "./subscription.route.js";
 import planRouter from "./plan.route.js";
 import paymentRouter from "./payment.route.js";
+import { seedPlans } from "../controllers/plan.controller.js";
 
 const mainRouter = Router();
 
 mainRouter.use("/auth", authRouter);
+mainRouter.post("/plans/seed", seedPlans);
 mainRouter.use(authMiddleware)
 mainRouter.use("/chat", chatRouter);
 mainRouter.use("/messages", messageRouter);

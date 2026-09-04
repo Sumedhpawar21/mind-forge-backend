@@ -52,6 +52,7 @@ model Messages {
 model Plans {
   id            String          @id @default(uuid())
   name          String
+  description   String?
   price         Int
   max_messages  Int
   createdAt     DateTime        @default(now())
@@ -65,7 +66,7 @@ model Plans {
 model Subscriptions {
   id        String   @id @default(uuid())
   planId    String
-  userId    String @unique
+  userId    String   @unique
   usage     Int
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
