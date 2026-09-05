@@ -11,6 +11,7 @@ app.use(morgan("dev"));
 app.use(cors({
     origin: envConfig.CORS_ORIGINS,
     credentials: true,
+    exposedHeaders: ["X-Chat-Id"],
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
