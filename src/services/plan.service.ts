@@ -1,5 +1,5 @@
 import { db } from "../configs/db.config.js";
-import { razorpayClient } from "../configs/razorpay.config.js";
+import { createOrderService } from "./razorpay.service.js";
 import type { AuthUser } from "../middlewares/auth.middleware.js";
 
 export const getPlansService = async () => {
@@ -50,22 +50,19 @@ export const seedPlansService = async () => {
 export const buyPlanService = async (user: AuthUser, planId: string) => {
     const plan = await db.plans.findUnique({ where: { id: planId } });
     const planPrice = Number(plan?.price || 0)
-    const order = await razorpayClient.orders.create({
+
+    const order = await createOrderService(user, {
         amount: planPrice * 100,
-        currency: "INR", notes: {
-            userId: user.userId,
-            name: user.name,
-            email: user.email
-        }
+        currency: "INR",
+        receipt: `plan_${planId}_${Date.now()}`,
+        planId,
     })
-    await db.payments.create({
-        data: {
-            amount: Number(plan?.price || 0),
-            status: "PENDING",
-            planId,
-            razorpayOrderId: order.id,
-            userId: user.userId
-        }
-    })
-    return order
+
+    return {
+        id: order.order_id,
+        amount: order.amount,
+        currency: order.currency,
+        entity: "order",
+        status: "created",
+    }
 }
