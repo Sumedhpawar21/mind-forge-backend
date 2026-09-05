@@ -1,5 +1,6 @@
 import { chatAgent } from "../agents/chat.agent.js"
 import { db } from "../configs/db.config.js"
+import type { Chats } from "../generated/prisma/client.js"
 import type { AuthUser } from "../middlewares/auth.middleware.js"
 import { generateAndSetChatTitle } from "./title.service.js"
 
@@ -26,21 +27,17 @@ export async function getMessagesService(page: number, limit: number, where: any
     return { messages, messageCount, hasMore }
 }
 
-export async function sendMessageService(chatId: string, userMessage: string, user: AuthUser) {
-    const chat = await db.chats.findUnique({
-        where: { id: chatId },
-        select: { title: true },
-    })
+export async function sendMessageService(chat: Chats, userMessage: string, user: AuthUser) {
 
     if (chat && !chat.title) {
-        generateAndSetChatTitle(chatId, userMessage).catch((error) => {
+        generateAndSetChatTitle(chat.id, userMessage).catch((error) => {
             console.error("Failed to generate chat title:", error)
         })
     }
 
     const messages = await db.messages.findMany({
         where: {
-            chatId
+            chatId: chat.id
         },
         orderBy: {
             createdAt: "desc"
@@ -48,6 +45,6 @@ export async function sendMessageService(chatId: string, userMessage: string, us
         take: 11
     })
     const conversation = messages.reverse();
-    return chatAgent(conversation, user, userMessage, chatId);
+    return chatAgent(conversation, user, userMessage, chat.id);
 
 }

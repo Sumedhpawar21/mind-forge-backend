@@ -1,8 +1,9 @@
-import { createTextStreamResponse, toTextStream } from "ai";
+import { toTextStream } from "ai";
 import { db } from "../configs/db.config.js";
-import { getChatService } from "../services/chat.service.js";
 import { getMessagesService, sendMessageService } from "../services/message.service.js";
+import { getSubscriptionUsageService } from "../services/subscription.service.js";
 import { asyncHandler } from "../utils/async.handler.util.js";
+import type { Chats } from "../generated/prisma/client.js";
 
 export const getMessages = asyncHandler(async (req, res) => {
     const chatId = String(req.params.chatId);
@@ -29,19 +30,39 @@ export const getMessages = asyncHandler(async (req, res) => {
 
 export const sendMessages = asyncHandler(async (req, res) => {
     const user = req.user!
-
     let { user_message, chatId } = req.body
-    if (!chatId) {
-        const newChat = await db.chats.create({
-            data: {
-                userId: user.userId
-            }
-        })
-        chatId = newChat.id
+    const usage = await getSubscriptionUsageService(user)
+    if (
+        Number(usage?.usage || 0) >=
+        Number(usage?.plan.max_messages || 0)
+    ) {
+        throw new Error("max message limit reached");
     }
+    let chat: Chats
+    if (!chatId) {
+        chat = await db.chats.create({
+            data: {
+                userId: user.userId,
+            },
+        });
 
+        chatId = chat.id;
+    } else {
+        const existingChat = await db.chats.findFirst({
+            where: {
+                id: chatId,
+                userId: user.userId,
+            },
+        });
+
+        if (!existingChat) {
+            throw new Error("Chat not found");
+        }
+
+        chat = existingChat;
+    }
     const result = await sendMessageService(
-        chatId,
+        chat,
         user_message,
         user,
     );

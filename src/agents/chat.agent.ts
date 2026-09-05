@@ -58,6 +58,7 @@ export async function chatAgent(
                 memories,
             );
             await saveMemories(user.userId, memories)
+            await db.subscriptions.update({ data: { usage: { increment: 1 } }, where: { userId: user.userId } })
         }
     });
 }

@@ -16,4 +16,6 @@ export const envConfig = {
     QDRANT_URL: String(process.env.QDRANT_URL) || "",
     OPENAI_API_KEY: String(process.env.OPENAI_API_KEY) || "",
     CORS_ORIGINS: parseCorsOrigins(String(process.env.CORS_ORIGINS || "")),
+    RAZORPAY_KEY_ID: String(process.env.RAZORPAY_KEY_ID || ""),
+    RAZORPAY_KEY_SECRET: String(process.env.RAZORPAY_KEY_SECRET || ""),
 }

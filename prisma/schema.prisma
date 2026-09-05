@@ -8,11 +8,13 @@ datasource db {
 }
 
 model User {
-  id     String  @id @default(uuid())
-  email  String  @unique
-  avatar String?
-  name   String
-  chats  Chats[]
+  id            String          @id @default(uuid())
+  email         String          @unique
+  avatar        String?
+  name          String
+  chats         Chats[]
+  subscriptions Subscriptions[]
+  payments      Payments[]
 
   @@map("users")
 }
@@ -45,4 +47,55 @@ model Messages {
   chat      Chats        @relation(fields: [chatId], references: [id], onDelete: Cascade)
 
   @@map("messages")
+}
+
+model Plans {
+  id            String          @id @default(uuid())
+  name          String
+  description   String?
+  price         Int
+  max_messages  Int
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @default(now()) @updatedAt
+  subscriptions Subscriptions[]
+  payments      Payments[]
+
+  @@map("plans")
+}
+
+model Subscriptions {
+  id        String   @id @default(uuid())
+  planId    String
+  userId    String   @unique
+  usage     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  plan Plans @relation(fields: [planId], references: [id])
+  user User  @relation(fields: [userId], references: [id])
+
+  @@map("subscriptions")
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAIL
+}
+
+model Payments {
+  id              String        @id @default(uuid())
+  paymentId       String?
+  razorpayOrderId String?       @unique
+  userId          String
+  planId          String
+  amount          Int
+  status          PaymentStatus
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @default(now()) @updatedAt
+
+  plan Plans @relation(fields: [planId], references: [id])
+  user User  @relation(fields: [userId], references: [id])
+
+  @@map("payments")
 }
